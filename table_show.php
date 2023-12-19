@@ -1,26 +1,28 @@
 <?php 
-include("config.php");
-include("table_functions.php");
+// Include necessary files for configuration and table functions
+    include("config.php");
+    include("table_functions.php");
 
+// Include file containing table aliases if needed
+    include("table_alias.php");         
 
-//
+// Fetch column names of the specified table
+    $columnNames = getColumnNames($tableName);  
+    // $columnNames is a 1D array of all the names of attributes
 
-// Start
-   
-
-    include("table_alias.php");
-
-    $columnNames = getColumnNames($tableName);  //columnNames is a 1D array of all the names of attributes
-
+// Uncomment the line below to display column names (for debugging purposes)
     // showColumnNames($columnNames);
 
-    $row = [];
-    $where = "";
-    $row= getRecords($tableName,$where);     //
-     
-    $columnNames = filterColumns($columnNames);
-    $columnRenames = renameColumns($columnNames);
+// Initialize variables
+$row = [];
+$where = "";    //where clause for the query
 
+// Retrieve records from the specified table
+$row = getRecords($tableName, $where);
+
+// Filter and rename columns for display according to available aliases
+$columnNames = filterColumns($columnNames);
+$columnRenames = renameColumns($columnNames);
 ?>
 
 <!DOCTYPE html>
@@ -31,24 +33,29 @@ include("table_functions.php");
     <title>Show Table</title>
 </head>
 <body>
-    <table border="1" width = 100>
+    <table border="1" width="100">
         <thead>
-            <?php  foreach($columnRenames as $col){    ?>
-            <th> <?php 
-                echo $col; } ?>    </th>
+            <!-- Printing column aliases  -->
+            <?php foreach($columnRenames as $col) { ?>
+                <th><?php echo $col; ?></th>
+            <?php } ?>
+
             <th colspan="2">Options</th>
         </thead>
-
-        <?php for($n=0; $n<count($row);$n++){   ?>
-        <tr>
-            <?php for($i=0;$i<count($columnNames);$i++){    ?>
-            <td>  <?php echo $row[$n][$columnNames[$i]];    ?>   </td>
-            <?php }?>   
-            <td>Edit</td>
-            <td>Delete</td>
-        </tr>
-        <?php }?>
         
+        <!-- Loop to print n number of rows -->
+        <?php for($n = 0; $n < count($row); $n++) { ?>
+            <tr>
+                <!-- Loop to print i number of columns -->
+                <?php for($i = 0; $i < count($columnNames); $i++) { ?>
+                    <!-- Print elements from assoc array  -->
+                    <td><?php echo $row[$n][$columnNames[$i]]; ?></td>
+                <?php } ?> 
+                  
+                <td>Edit</td>
+                <td>Delete</td>
+            </tr>
+        <?php } ?>
     </table>
 </body>
 </html>

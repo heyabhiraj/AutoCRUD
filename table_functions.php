@@ -26,7 +26,8 @@
     // ALias Handling
     function filterColumns($columnNames){
         global $aliases;
-        define("LEN",count($columnNames));  // to keep the lenght constant
+        define("LEN",count($columnNames));  
+        // to keep the lenght constant else count will keep decreasing w every unset.
 
         // unsetting elements; to set again add more aliases
         for($i=0;$i<LEN;$i++){
@@ -39,9 +40,8 @@
 
     function renameColumns($columnNames){
         global $aliases;
-        define("NEWLEN",count($columnNames));  // to keep the lenght constant
 
-        for($i=0;$i<NEWLEN;$i++){
+        for($i=0;$i<count($columnNames);$i++){
             if(isset($aliases[$columnNames[$i]]))
             $columnNames[$i] = $aliases[$columnNames[$i]];
         }
