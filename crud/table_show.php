@@ -1,4 +1,9 @@
 <?php 
+if(isset($_REQUEST['tablename'])){
+    $tableName = $_REQUEST['tablename']    ;
+    
+    }
+    else die("No table found");
 // Include necessary files for configuration and table functions
     include("config.php");
     include("table_functions.php");
@@ -14,14 +19,14 @@
     // showColumnNames($columnNames);
 
 // Initialize variables
-$row = [];
+$rows = [];
 $where = "";    //where clause for the query
 
 // Retrieve records from the specified table
-$row = getRecords($tableName, $where);
+$rows = getRecords($tableName, $where);
 
 // Filter and rename columns for display according to available aliases
-$columnNames = filterColumns($columnNames);
+$columnNames = getFilteredColumns($tableName);
 $columnRenames = renameColumns($columnNames);
 ?>
 
@@ -31,31 +36,46 @@ $columnRenames = renameColumns($columnNames);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show Table</title>
+    <link rel="stylesheet" href="style.scss">
 </head>
 <body>
     <table border="1" width="100">
         <thead>
+            <th>Serial No.</th>
             <!-- Printing column aliases  -->
-            <?php foreach($columnRenames as $col) { ?>
-                <th><?php echo $col; ?></th>
-            <?php } ?>
+            <?php foreach($columnRenames as $col) {
+                if($col == "Id")
+                $hidden = "hidden";
+                else
+                $hidden = "";
+                echo '<th '.$hidden.'>'. $col .'</th>';
+             } ?>
 
             <th colspan="2">Options</th>
         </thead>
         
         <!-- Loop to print n number of rows -->
-        <?php for($n = 0; $n < count($row); $n++) { ?>
-            <tr>
+        
+            <?php for($n = 0; $n < count($rows); $n++) { ?>
+            <tr> 
+                    <td><?php echo $n+1; ?>  </td>
                 <!-- Loop to print i number of columns -->
-                <?php for($i = 0; $i < count($columnNames); $i++) { ?>
-                    <!-- Print elements from assoc array  -->
-                    <td><?php echo $row[$n][$columnNames[$i]]; ?></td>
-                <?php } ?> 
+                <?php for($i = 0; $i < count($columnNames); $i++) { 
+                    if($columnRenames[$i] == "Id") // Hide id column from display 
+                    $hidden = "hidden"   ;
+                    else
+                    $hidden = "";
+                    
+                    //  Print elements from assoc array 
+                    echo '<td '.$hidden.'>'.$rows[$n][$columnNames[$i]].'</td>';
+                } ?> 
                   
                 <td>Edit</td>
                 <td>Delete</td>
+                </li>
             </tr>
-        <?php } ?>
+            <?php } ?>
+        
     </table>
 </body>
 </html>

@@ -12,17 +12,19 @@ $aliases= [
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
+        <link rel="stylesheet" href="style.scss">
 </head>
 <body>
         
         <form action="" method="post">
+        
         <select name="table" id="">
                 <option value="null" selected disabled >Select Table</option>
                 <?php
-                while($r = $result->fetch_array()){
+                foreach($tables as $table){
                  ?>
-                <option value="<?php echo $r[0]?>">
-                <?php echo $r[0]; ?>    <br> <br>
+                <option value="<?php echo $table;?>">
+                <?php echo $table; ?>    <br> <br>
                 
                 </option>
      
