@@ -1,9 +1,7 @@
 <?php
 include("config.php");
 
-$aliases= [
-        ''=>'',
-];
+
 
 ?>
 <!DOCTYPE html>
@@ -43,5 +41,6 @@ if(isset($_REQUEST['table'])){
 
         header("Location: table_$operation.php?tablename=$table");
 }
+
 
 ?>

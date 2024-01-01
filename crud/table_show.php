@@ -1,9 +1,9 @@
 <?php 
-if(isset($_REQUEST['tablename'])){
-    $tableName = $_REQUEST['tablename']    ;
-    
-    }
-    else die("No table found");
+if(!isset($_REQUEST['tablename'])){
+    die("No table found");
+}
+
+$tableName = $_REQUEST['tablename']    ;
 // Include necessary files for configuration and table functions
     include("config.php");
     include("table_functions.php");
@@ -44,10 +44,8 @@ $columnRenames = renameColumns($columnNames);
             <th>Serial No.</th>
             <!-- Printing column aliases  -->
             <?php foreach($columnRenames as $col) {
-                if($col == "Id")
-                $hidden = "hidden";
-                else
-                $hidden = "";
+                
+                $hidden = isHidden($col);
                 echo '<th '.$hidden.'>'. $col .'</th>';
              } ?>
 
@@ -61,10 +59,9 @@ $columnRenames = renameColumns($columnNames);
                     <td><?php echo $n+1; ?>  </td>
                 <!-- Loop to print i number of columns -->
                 <?php for($i = 0; $i < count($columnNames); $i++) { 
-                    if($columnRenames[$i] == "Id") // Hide id column from display 
-                    $hidden = "hidden"   ;
-                    else
-                    $hidden = "";
+                     // Hide id column from display 
+                    $hidden = isHidden($columnNames[$i])   ;
+                    
                     
                     //  Print elements from assoc array 
                     echo '<td '.$hidden.'>'.$rows[$n][$columnNames[$i]].'</td>';

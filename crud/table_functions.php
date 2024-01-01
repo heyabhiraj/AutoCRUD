@@ -108,16 +108,53 @@
     }
 /**/
 
+/************ SAVE FUNCTIONS ***************/
+function keyByValue($array, $value){
+    foreach ($array as $key => $val){
+        if ($val == $value)
+            return $key;
+    }
+    return null;
+}
+
+
+
+function saveRecord($tableName,$columnNames){
+    global $conn;
+    foreach($columnNames as $column){
+        if(isHidden($column))
+        continue;
+
+        if(isset($_REQUEST[$column]))                
+        $record[$column] = $_REQUEST[$column];
+        else 
+        $record[$column] = "";
+        
+        array_push($fields,$column);
+    }      
+    $sql = "INSERT INTO $tableName(".implode(",",$fields).") 
+    VALUES('".implode("','",$record)."')";
+    
+    echo $sql;
+    $conn->query($sql) or die("Query failed");
+}
+
+
+/**/
+
 /*********** INSERT/ UPDATE FUNCTIONS ***********/
 
 
 function createInput($tableName, $columnName, $value){
-    $check=setinputType($tableName,$columnName);
+    global $foreignKey;
+    $check=setInputType($tableName,$columnName);
     if($check == "enum")
     return createSelection($tableName,$columnName,$value);
     $check= isTextArea($columnName);
     if($check == "text")
     return createTextArea($columnName,$value);
+    if(in_array($columnName,$foreignKey)!==false)
+    return createCategorySelection($columnName,$value);
     return createInputTag($tableName,$columnName,$value);
 }
 
@@ -131,7 +168,7 @@ function createInput($tableName, $columnName, $value){
          *
         **/
         function createInputTag($tableName, $columnName, $value){
-            
+            global $aliases;
             $required = isRequired($tableName,$columnName);     // Check if column is required 
             $inputType = setinputType($tableName, $columnName) ;
             $hidden = isHidden($columnName);           // Check if column is hidden
@@ -139,7 +176,8 @@ function createInput($tableName, $columnName, $value){
             $inputType = $hidden? "hidden": $inputType ;
             
             $spell = "spellcheck=true" ;
-            echo "<input type=$inputType name=$columnName id=$columnName value='$value' $spell $required >";
+            echo "<input type=$inputType name=$columnName 
+                    id=$aliases[$columnName] value='$value' $spell $required >";
         }
         
                 /**
@@ -150,14 +188,15 @@ function createInput($tableName, $columnName, $value){
                  *  @param string $columnName - The name of the field.
                  *  @return string - The input type of the field.
                  */
-                function setinputType($tableName, $columnName){
+                function setInputType($tableName, $columnName){
                     $fieldType = getFieldType($tableName, $columnName) ;
                     $inputType = getDataTypeName($fieldType) ;
                     return $inputType ; 
                 }
                     /** Get Data Type Functions **/
+
                         /**
-                         *  Get the type of a Field.
+                         *  Get the Type of a Field from DB. Eg. varchar(100), int(5), enum("",""), etc
                          * 
                          * @param string $tableName - The name of the table.
                          * @param string $columnName - The name of the field.
@@ -172,14 +211,14 @@ function createInput($tableName, $columnName, $value){
                         }
 
                         /** 
-                        * Get the name of the data type from an array in alias.php to be used in input tag type.
+                        * Get the name of the data type from an array in alias.php to be used in input tag type. E.g varchar(100) becomes 'text', int(5) becomes 'number' 
                         *
                         * @param $fieldType - data type of the field 
                         * @return - name of the data type
                         **/
                         function getDataTypeName($fieldType) {
                             global $dataTypes;  
-                            foreach ($dataTypes as $key => $value) {    
+                            foreach ($dataTypes as $key => $value) {    // $key is a string while $value is an array here    
                                 foreach ($value as $v) {
                                     // Check if any of the elements $v of array $value match from field type
                                     if(stripos($fieldType,$v)!==false)  
@@ -198,9 +237,15 @@ function createInput($tableName, $columnName, $value){
          * 
          * */
         function createTextArea($columnName, $value){
+            if(!isTextArea($columnName)){
+                echo "TextArea not applicable here.";
+                return;
+            }
+            global $aliases;
+            
             $spell = "spellcheck=true" ;
             global $required;
-            echo "<textarea name=$columnName id=$columnName '$spell' cols=22 rows=5 $required>$value</textarea>";
+            echo "<textarea name=$columnName id=$aliases[$columnName] '$spell' cols=22 rows=5 $required>$value</textarea>";
         }
         /**
          *  Create a selection for enum
@@ -210,8 +255,13 @@ function createInput($tableName, $columnName, $value){
          *  @param string $selectedValue
          */
         function createSelection($tableName, $columnName, $selectedValue){
+            if(setInputType($tableName,$columnName)!=="enum"){
+                echo "Selection not applicable here.";
+                return;
+            }
             $required = isRequired($tableName,$columnName);
-            echo "<select name=$columnName id=$columnName $required>";      // Selection tag
+            global $aliases;
+            echo "<select name=$columnName id=$aliases[$columnName] $required>";      // Selection tag
 
             echo "<option disabled selected>Select</option>";            // Disabled option
             $enum = getEnumValues($tableName,$columnName);                  // Get enum values
@@ -222,6 +272,7 @@ function createInput($tableName, $columnName, $value){
 
             echo "</select>";
         }
+
                 /** Get Enum Values Functions **/        
                     /**
                      *  Get the predefined values of enum.
@@ -244,6 +295,43 @@ function createInput($tableName, $columnName, $value){
                         return $enum;
                     }
                 /***/
+        
+                
+        function getForeignKeys(){
+            global $conn, $foreignKey, $categoryList;
+            foreach($foreignKey as $tableName => $columnName){
+                $otherColumns = implode(", ",$categoryList[$columnName]);
+                $sql = "SELECT $columnName, $otherColumns FROM $tableName";
+                $result = $conn->query($sql) or die("naw");
+                $row = $result->fetch_all(MYSQLI_NUM);
+                return $row;
+           }
+                
+        }
+
+        function createCategorySelection($columnName,$selectedValue){
+            $list=[];
+            global $conn,$categoryList,$foreignKey,$aliases;
+            $row = getForeignKeys();
+            for($i=0;$i<count($row);$i++){
+                $list[$row[$i][0]]= $row[$i][1];
+            } 
+            echo "<select name=$columnName id=$aliases[$columnName] required>"; // Selection tag
+            echo "<option disabled selected>Select</option>";    // Disabled option
+            foreach($list as $id=>$name){  
+                $selected = isSelected($id,$selectedValue);
+                echo "<option value= $id>$name</option>";
+            }
+                    
+
+            echo "</select>";   
+            
+        }   
+                                   
+            
+            
+        
+        // }
 
         /**
          *  Create lables for input fields
@@ -289,9 +377,9 @@ function isSelected($value,$selectedValue){
 }
 
 function isHidden($columnName){
-    global $toHide;
+    global $toHide,$aliases;
     foreach($toHide as $hide){
-        if(stripos($columnName,$hide)!==false)
+        if(stripos($aliases[$columnName],$hide)!==false)
             return "hidden" ;
         }
         return "" ;
