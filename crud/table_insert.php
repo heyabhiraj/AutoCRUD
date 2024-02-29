@@ -50,9 +50,7 @@ $required =  isRequired($tableName,$columnNames[0]);
             echo "<br>";
         }
         ?>
-        
     <input type="submit" value="Insert">
-
     </form>
     
 

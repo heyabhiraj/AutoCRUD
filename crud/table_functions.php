@@ -74,6 +74,8 @@
         return $columnNames;
     }
 
+   
+
     /**
      * Display column names.
      * 
@@ -126,35 +128,36 @@
 /************ SAVE FUNCTIONS ***************/
 class Save{
 
-function keyByValue($array, $value){
-    foreach ($array as $key => $val){
-        if ($val == $value)
-            return $key;
+    function keyByValue($array, $value){
+        foreach ($array as $key => $val){
+            if ($val == $value)
+                return $key;
+        }
+        return null;
     }
-    return null;
-}
 
 
 
-function saveRecord($tableName,$columnNames){
-    global $conn;
-    foreach($columnNames as $column){
-        if(isHidden($column))
-        continue;
+    function saveRecord($tableName,$columnNames){
+        global $conn;
+        foreach($columnNames as $column){
+            if(isHidden($column))
+            continue;
 
-        if(isset($_REQUEST[$column]))
-        $record[$column] = $_REQUEST[$column];
-        else
-        $record[$column] = "";
+            if(isset($_REQUEST[$column]))
+            $record[$column] = $_REQUEST[$column];
+            else
+            $record[$column] = "";
 
-        array_push($fields,$column);
+            array_push($fields,$column);
+        }
+        $sql = "INSERT INTO $tableName(".implode(",",$fields).")
+        VALUES('".implode("','",$record)."')";
+
+        echo $sql;
+        $conn->query($sql) or die("Query failed");
     }
-    $sql = "INSERT INTO $tableName(".implode(",",$fields).")
-    VALUES('".implode("','",$record)."')";
 
-    echo $sql;
-    $conn->query($sql) or die("Query failed");
-}
 }
 
 
@@ -332,11 +335,11 @@ public function createInput($tableName, $columnName, $value){
          *  Fetching all the values of the relevant column from tables whose primary key has 
          *  been used as foriegn key in the current table
          * 
-         *  @return array $foreignKeyValues - values of the relevant column indexed with the 
-         *  primary key values.
+         *  @return array $categoryValues - values of the relevant column such as category_name 
+         *  indexed with the primary key values such as category_id
          * 
          *  */       
-        protected function getForeignKeyValues(){    // in progress
+        public function getCategoryValues(){    
             global $conn, $foreignKey, $categoryColumnList;
             // 
 
@@ -344,15 +347,16 @@ public function createInput($tableName, $columnName, $value){
                 
                 $sql = "SELECT $columnName, $categoryColumnList[$tableName] FROM $tableName";
                 $result = $conn->query($sql) or die("could retrive foriegn key values");
-                $foreignKeyValues=[];
+                $categoryValues=[];
                 while($row = $result->fetch_row()){
-                    $foreignKeyValues[$row[0]]=$row[1];
+                    $categoryValues[$row[0]]=$row[1];
                 }
-                return $foreignKeyValues;
-
-           }
+                return $categoryValues;     }
                 
         }
+
+        
+
 
         /**
          *  Create selection for category list using foriegn key
@@ -364,13 +368,13 @@ public function createInput($tableName, $columnName, $value){
          function createCategorySelection($columnName,$selectedValue){
              $form= new Form();
             global $conn,$categoryList,$foreignKey,$aliases;
-            $row = $form->getForeignKeyValues();
+            $value = $form->getCategoryValues();
             
             echo "<select name=$columnName id=$aliases[$columnName] required>"; // Selection tag
             echo "<option disabled selected>Select</option>";    // Disabled option
-            foreach($row as $id=>$name){  
+            foreach($value as $id=>$name){  
                 $selected = isSelected($id,$selectedValue);
-                echo "<option value= $id>$name</option>";
+                echo "<option value= $id $selected>$name</option>";
             }
                     
 

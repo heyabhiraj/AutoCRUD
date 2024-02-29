@@ -64,14 +64,25 @@ $columnRenames = renameColumns($columnNames);
                 <!-- Loop to print i number of columns -->
                 <?php for($i = 0; $i < count($columnNames); $i++) { 
                      // Hide id column from display 
-                    $hidden = isHidden($columnNames[$i])   ;
+                    if($hidden = isHidden($columnNames[$i]) )
+                     $id = $rows[$n][$columnNames[$i]];
+
+                    // 
+                    if(in_array($columnNames[$i],$foreignKey)!==false){{
+                            $form = new form();
+                            $values= $form->getCategoryValues();
+                            // print category_name using category_id as index
+                            $k= $rows[$n][$columnNames[$i]];
+                        echo '<td '.$hidden.'>'.$values[$k].'</td>';
+                    }}
                     
                     
+                    else
                     //  Print elements from assoc array 
                     echo '<td '.$hidden.'>'.$rows[$n][$columnNames[$i]].'</td>';
                 } ?> 
                   
-                <td><a href="table_edit.php?tablename=<?php echo $tableName;?>&id=1">Edit</a></td>
+                <td><a href="table_edit.php?<?php echo "tablename=".$tableName."&id=".$id;?>">Edit</a></td>
                 <td>Delete</td>
                 </li>
             </tr>
