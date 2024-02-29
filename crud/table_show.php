@@ -6,13 +6,14 @@ if(!isset($_REQUEST['tablename'])){
 $tableName = $_REQUEST['tablename']    ;
 // Include necessary files for configuration and table functions
     include("config.php");
-    include("table_functions.php");
+   
 
 // Include file containing table aliases if needed
-    include("table_alias.php");         
+    include("table_alias.php");      
+    include("table_functions.php");   
 
 // Fetch column names of the specified table
-    $columnNames = getColumnNames($tableName);  
+    // $columnNames = getColumnNames($tableName);  
     // $columnNames is a 1D array of all the names of attributes
 
 // Uncomment the line below to display column names (for debugging purposes)
@@ -28,6 +29,9 @@ $rows = getRecords($tableName, $where);
 // Filter and rename columns for display according to available aliases
 $columnNames = getFilteredColumns($tableName);
 $columnRenames = renameColumns($columnNames);
+
+// Uncomment the line below to display column names (for debugging purposes)
+    // showColumnNames($columnNames);
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +71,7 @@ $columnRenames = renameColumns($columnNames);
                     echo '<td '.$hidden.'>'.$rows[$n][$columnNames[$i]].'</td>';
                 } ?> 
                   
-                <td>Edit</td>
+                <td><a href="table_edit.php?tablename=<?php echo $tableName;?>&id=1">Edit</a></td>
                 <td>Delete</td>
                 </li>
             </tr>

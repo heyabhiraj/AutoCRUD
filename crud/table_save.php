@@ -13,13 +13,14 @@ if(!isset($_REQUEST['tablename'])){
     include("config.php");
     include("table_functions.php");
     include("table_alias.php");  
+    $save = new Save();
 
     $columnNames = getFilteredColumns($tableName);
     $columnRenames = renameColumns($columnNames);
 
     switch($pageName){
         case 'Add':
-            saveRecord($tableName,$columnNames);
+            $save->saveRecord($tableName,$columnNames);
             
             echo "<script>
             alert('Record Inserted.');

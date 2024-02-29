@@ -6,10 +6,11 @@
 /************ DISPLAY FUNCTIONS **************/
 
     /**
-     * Get column names of a table.
+     * Get column names of a table using Desc command and fetching 
+     * names under 'Field' column.
      * 
      * @param string $tableName - The name of the table.
-     * @return array - An array containing the column names.
+     * @return array $col - An array containing the column names.
      */
     function getColumnNames($tableName){
         global $conn;
@@ -18,7 +19,7 @@
         $sql = "DESC $tableName";
         
         // Execute the query
-        $result = $conn->query($sql) or die("Query failed");
+        $result = $conn->query($sql) or die("Could not get column names");
 
         $col = []; // An array to store the names
 
@@ -32,7 +33,8 @@
     }
 
     /**
-     * Filter columns based on aliases.
+     * Filter columns based on aliases by unsetting the index that does not match the
+     * aliases array
      * 
      * @param array $columnNames - An array containing column names.
      * @return array - An array containing filtered column names.
@@ -89,7 +91,7 @@
      * 
      * @param string $tableName - The name of the table.
      * @param string $where - The WHERE condition for the query.
-     * @return array - An array containing the fetched records.
+     * @return array - An associative array containing fetch_all records.
      */
     function getRecords($tableName, $where){
         global $conn;
@@ -106,9 +108,24 @@
         // Return the array of records
         return $row;
     }
-/**/
+/*****************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /************ SAVE FUNCTIONS ***************/
+class Save{
+
 function keyByValue($array, $value){
     foreach ($array as $key => $val){
         if ($val == $value)
@@ -125,37 +142,50 @@ function saveRecord($tableName,$columnNames){
         if(isHidden($column))
         continue;
 
-        if(isset($_REQUEST[$column]))                
+        if(isset($_REQUEST[$column]))
         $record[$column] = $_REQUEST[$column];
-        else 
+        else
         $record[$column] = "";
-        
+
         array_push($fields,$column);
-    }      
-    $sql = "INSERT INTO $tableName(".implode(",",$fields).") 
+    }
+    $sql = "INSERT INTO $tableName(".implode(",",$fields).")
     VALUES('".implode("','",$record)."')";
-    
+
     echo $sql;
     $conn->query($sql) or die("Query failed");
 }
+}
 
 
-/**/
+/************************************/
+
+
+
+
+
 
 /*********** INSERT/ UPDATE FUNCTIONS ***********/
+class Form{
 
 
-function createInput($tableName, $columnName, $value){
+
+public function createInput($tableName, $columnName, $value){
     global $foreignKey;
-    $check=setInputType($tableName,$columnName);
+    // checks and set the input type of the particular column
+    $check=$this->setInputType($tableName,$columnName);
+    // check if it is a selection type
     if($check == "enum")
-    return createSelection($tableName,$columnName,$value);
+    return $this->createSelection($tableName,$columnName,$value);
+    // check if it qualifies for text area
     $check= isTextArea($columnName);
     if($check == "text")
-    return createTextArea($columnName,$value);
+    return $this->createTextArea($columnName,$value);
+    // 
     if(in_array($columnName,$foreignKey)!==false)
-    return createCategorySelection($columnName,$value);
-    return createInputTag($tableName,$columnName,$value);
+    return $this->createCategorySelection($columnName,$value);
+    // default
+    return $this->createInputTag($tableName,$columnName,$value);
 }
 
         /** Input Tag Functions **/
@@ -165,12 +195,11 @@ function createInput($tableName, $columnName, $value){
          *  @param string $tableName - The name of the table used in other function calls.
          *  @param string $columnName - The name of the column from the columnNames array.
          *  @param string $selectedValue - The selected value.
-         *
-        **/
-        function createInputTag($tableName, $columnName, $value){
-            global $aliases;
+         ***/
+        protected  function createInputTag($tableName, $columnName, $value){
+            global $aliases; $form= new Form();
             $required = isRequired($tableName,$columnName);     // Check if column is required 
-            $inputType = setinputType($tableName, $columnName) ;
+            $inputType = $form->setinputType($tableName, $columnName) ;
             $hidden = isHidden($columnName);           // Check if column is hidden
             $required = $hidden? "": $required ;
             $inputType = $hidden? "hidden": $inputType ;
@@ -187,10 +216,11 @@ function createInput($tableName, $columnName, $value){
                  *  @param string $tableName - The name of the table.
                  *  @param string $columnName - The name of the field.
                  *  @return string - The input type of the field.
-                 */
-                function setInputType($tableName, $columnName){
-                    $fieldType = getFieldType($tableName, $columnName) ;
-                    $inputType = getDataTypeName($fieldType) ;
+                 **/
+                protected static function setInputType($tableName, $columnName){
+                    $form= new Form();
+                    $fieldType = $form->getFieldType($tableName, $columnName) ;
+                    $inputType = $form->getDataTypeName($fieldType) ;
                     return $inputType ; 
                 }
                     /** Get Data Type Functions **/
@@ -202,7 +232,7 @@ function createInput($tableName, $columnName, $value){
                          * @param string $columnName - The name of the field.
                          * @return string - The type of the field.
                          **/
-                        function getFieldType($tableName, $columnName){
+                        protected function getFieldType($tableName, $columnName){
                             global $conn ;
                             $sql = "DESCRIBE $tableName $columnName" ;
                             $result = $conn->query($sql) or die("Query failed");
@@ -216,7 +246,7 @@ function createInput($tableName, $columnName, $value){
                         * @param $fieldType - data type of the field 
                         * @return - name of the data type
                         **/
-                        function getDataTypeName($fieldType) {
+                        protected function getDataTypeName($fieldType) {
                             global $dataTypes;  
                             foreach ($dataTypes as $key => $value) {    // $key is a string while $value is an array here    
                                 foreach ($value as $v) {
@@ -227,6 +257,7 @@ function createInput($tableName, $columnName, $value){
                             }
                             return 'text';
                         }
+                
                     /***/
         /**
          * 
@@ -236,7 +267,7 @@ function createInput($tableName, $columnName, $value){
          *  @param string $selectedValue - The selected value.
          * 
          * */
-        function createTextArea($columnName, $value){
+        protected function createTextArea($columnName, $value){
             if(!isTextArea($columnName)){
                 echo "TextArea not applicable here.";
                 return;
@@ -254,8 +285,9 @@ function createInput($tableName, $columnName, $value){
          *  @param string $columnName
          *  @param string $selectedValue
          */
-        function createSelection($tableName, $columnName, $selectedValue){
-            if(setInputType($tableName,$columnName)!=="enum"){
+        protected function createSelection($tableName, $columnName, $selectedValue){
+            $form= new Form();
+            if($form->setInputType($tableName,$columnName)!=="enum"){
                 echo "Selection not applicable here.";
                 return;
             }
@@ -264,7 +296,7 @@ function createInput($tableName, $columnName, $value){
             echo "<select name=$columnName id=$aliases[$columnName] $required>";      // Selection tag
 
             echo "<option disabled selected>Select</option>";            // Disabled option
-            $enum = getEnumValues($tableName,$columnName);                  // Get enum values
+            $enum = $form->getEnumValues($tableName,$columnName);                  // Get enum values
             foreach($enum as $value){
                     $selected = isSelected($value,$selectedValue);
                     echo "<option value=$value $selected>$value</option>";
@@ -273,7 +305,7 @@ function createInput($tableName, $columnName, $value){
             echo "</select>";
         }
 
-                /** Get Enum Values Functions **/        
+                /****** Get Enum Values Functions ******/        
                     /**
                      *  Get the predefined values of enum.
                      * 
@@ -282,7 +314,7 @@ function createInput($tableName, $columnName, $value){
                      *   @return array - An array containing the predefined values of the enum.
                      *  E.g. getEnumValues("table_name","column_name")
                      */
-                    function getEnumValues($tableName,$columnName){
+                    protected function getEnumValues($tableName,$columnName){
                         global $conn; 
                         $sql = "DESC $tableName $columnName";        //  Query
                         $result = $conn->query($sql);
@@ -296,29 +328,47 @@ function createInput($tableName, $columnName, $value){
                     }
                 /***/
         
-                
-        function getForeignKeys(){
-            global $conn, $foreignKey, $categoryList;
+        /**
+         *  Fetching all the values of the relevant column from tables whose primary key has 
+         *  been used as foriegn key in the current table
+         * 
+         *  @return array $foreignKeyValues - values of the relevant column indexed with the 
+         *  primary key values.
+         * 
+         *  */       
+        protected function getForeignKeyValues(){    // in progress
+            global $conn, $foreignKey, $categoryColumnList;
+            // 
+
             foreach($foreignKey as $tableName => $columnName){
-                $otherColumns = implode(", ",$categoryList[$columnName]);
-                $sql = "SELECT $columnName, $otherColumns FROM $tableName";
-                $result = $conn->query($sql) or die("naw");
-                $row = $result->fetch_all(MYSQLI_NUM);
-                return $row;
+                
+                $sql = "SELECT $columnName, $categoryColumnList[$tableName] FROM $tableName";
+                $result = $conn->query($sql) or die("could retrive foriegn key values");
+                $foreignKeyValues=[];
+                while($row = $result->fetch_row()){
+                    $foreignKeyValues[$row[0]]=$row[1];
+                }
+                return $foreignKeyValues;
+
            }
                 
         }
 
-        function createCategorySelection($columnName,$selectedValue){
-            $list=[];
+        /**
+         *  Create selection for category list using foriegn key
+         * 
+         *  @param string $columnName 
+         *  @param string $selectedValue
+         * 
+         **/
+         function createCategorySelection($columnName,$selectedValue){
+             $form= new Form();
             global $conn,$categoryList,$foreignKey,$aliases;
-            $row = getForeignKeys();
-            for($i=0;$i<count($row);$i++){
-                $list[$row[$i][0]]= $row[$i][1];
-            } 
+            $row = $form->getForeignKeyValues();
+            
             echo "<select name=$columnName id=$aliases[$columnName] required>"; // Selection tag
             echo "<option disabled selected>Select</option>";    // Disabled option
-            foreach($list as $id=>$name){  
+            foreach($row as $id=>$name){  
                 $selected = isSelected($id,$selectedValue);
                 echo "<option value= $id>$name</option>";
             }
@@ -339,8 +389,9 @@ function createInput($tableName, $columnName, $value){
          *  @param string $columnName - The name of the column from the columnNames array.
          *  @param string $columnRename - The name of the column from the columnRenames array.
          * 
+         * 
          * */
-        function createLabel($columnName,$columnRename){
+        public function createLabel($columnName,$columnRename){
             if(isHidden($columnName))   // Check if column is hidden
 
             return;
@@ -349,7 +400,16 @@ function createInput($tableName, $columnName, $value){
         
         }
 
+        public function getInputValues($tableName,$columnName,$where){
+            global $conn;
+            $sql = "SELECT $columnName FROM $tableName WHERE $where";
+            $result = $conn->query($sql) ;
+            $value = $result->fetch_row();
+            return $value[0];
 
+        }
+
+}
 /**
  *  Check if a column is required based on NOT NULL
  * 
@@ -377,13 +437,16 @@ function isSelected($value,$selectedValue){
 }
 
 function isHidden($columnName){
-    global $toHide,$aliases;
+    global $toHide,$aliases,$foreignKey;
+    if(in_array($columnName,$foreignKey))
+    return "";
     foreach($toHide as $hide){
-        if(stripos($aliases[$columnName],$hide)!==false)
+        if(stripos($columnName,$hide)!==false)
             return "hidden" ;
         }
         return "" ;
 }
+
 function isTextArea($columnName){
     global $forTextArea;
     foreach($forTextArea as $value){

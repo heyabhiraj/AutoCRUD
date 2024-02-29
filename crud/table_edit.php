@@ -2,7 +2,12 @@
 if(isset($_REQUEST['tablename']))
     $tableName = $_REQUEST['tablename'];
 else
-    die("Table Not Found");
+    die("Table Query Not Found");
+
+if(isset($_REQUEST['id']))
+    $id = $_REQUEST['id'];
+else
+    die("Record Query Not Found");
 
 include("config.php");
 include("table_alias.php");
@@ -40,11 +45,16 @@ $required =  isRequired($tableName,$columnNames[0]);
 
 
         <?php
-        $value = "";
+        $value = ""; $where = "";
         foreach($columnNames as $column){
-            if(isHidden($column))
-            continue;
+            if(isHidden($column)){
+                $where = "$column = 102";
+                continue;
+            }
+            
             $form->createLabel($column,$aliases[$column]);
+            
+            $value = $form->getInputValues($tableName,$column,$where);
             
             $form->createInput($tableName,$column,$value);
             echo "<br>";

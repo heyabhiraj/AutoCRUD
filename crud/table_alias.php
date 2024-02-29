@@ -1,6 +1,6 @@
 <?php
 
-$aliases = [];      // or storing aliases of the table fields
+$aliases = [];      // for storing aliases of the table fields
 $where = "";        //for storing where clause of the query
 
 /**
@@ -24,7 +24,6 @@ switch($tableName){
             'item_id' => 'Id',
             'category_id' => 'Category',
             'item_name' => 'Name',
-            'category_name'=> 'Category',
             'item_price' => 'Price',
             'item_description' => 'Description',
             'item_status' => 'Status',
@@ -54,6 +53,7 @@ $tableAliases= [
 
 $foreignKey=[];     // Store data of foreign keys like 'related_table' => 'primary_key'
 // not final
+
 switch($tableName){
     case 'item_list':
         $foreignKey = [
@@ -69,15 +69,15 @@ switch($tableName){
     break;
 }
 
-$categoryList = []; // Store data of category like 'category_id' => 'category_name'
-// Not the same as item_category but can store category/class for any list
+
+
+$categoryColumnList = []; // Stores the relevant column name to be fetched using the foriegnkey
 switch($tableName){
     case 'item_list':
-        $categoryList = [
-            'category_id' => [
-                'category_name',
+        $categoryColumnList = [
 
-            ],
+            'item_category'=>'category_name'
+                // Add more
         ];
         break;
     default:
