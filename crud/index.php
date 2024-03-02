@@ -15,7 +15,9 @@ include("config.php");
 <body>
         
         <form action="" method="post">
-        
+
+
+        <!-- Select the Table Name -->
         <select name="table" id="">
                 <option value="null" selected disabled >Select Table</option>
                 <?php
@@ -28,6 +30,8 @@ include("config.php");
      
         <?php }?>
         </select>
+
+        <!--Submit Buttons Takes You The Respective Page-->
         <input type="submit" value="Insert" name="operation">
         <input type="submit" value="Show" name="operation">
         </form>

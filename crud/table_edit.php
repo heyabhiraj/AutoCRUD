@@ -26,17 +26,20 @@ $required =  isRequired($tableName,$columnNames[0]);
 </head>
 <body>
     <form action="table_save.php" method="get">
-        <input type="hidden" name="pagename" value="Add">
+        <input type="hidden" name="pagename" value="Edit">
         <input type="hidden" name="tablename" value="<?php echo $tableName ?>">
+        <input type="hidden" name="id" value="<?php echo $id ?>">
         
         <h1 style="text-align: center;margin-top: 20px;margin-bottom: 20px;font-size: 30px;color: #1a1a1a;font-weight: bold; letter-spacing: 2px;border-bottom: 1px solid;">
            <?php echo "Edit ". $tableAliases[$tableName] ?> </h1>
         <?php
         $value = ""; $where = "";
         foreach($columnNames as $column){
+
+            // detect which column will store the id
             if(isHidden($column)){
                 $where = "$column = $id";
-                continue;
+
             }
             
             $form->createLabel($column,$aliases[$column]);

@@ -58,6 +58,7 @@ switch($tableName){
     case 'item_list':
         $foreignKey = [
             'item_category' => 'category_id'
+            
         ];
         break;
     case 'item_schedule':

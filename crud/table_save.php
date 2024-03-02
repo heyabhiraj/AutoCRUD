@@ -1,8 +1,10 @@
 <?php
 
+/****** Saves Changes After Insert, Update, or Delete  ******/
+
 $record = [];
 if(!isset($_REQUEST['tablename'])){
-    die("dead");
+    die("Table Name Query Not Found");
 }
 
 
@@ -15,6 +17,7 @@ if(!isset($_REQUEST['tablename'])){
     include("table_alias.php");  
     $save = new Save();
 
+    // Stores all the columns of the table
     $columnNames = getFilteredColumns($tableName);
     $columnRenames = renameColumns($columnNames);
 
@@ -30,6 +33,27 @@ if(!isset($_REQUEST['tablename'])){
 
         break;
         case 'Edit':
+            $save->updateRecord($tableName,$columnNames);
+            
+            echo "<script>
+            alert('Record Updated.');
+            window.location.href='table_show.php?tablename=$tableName';
+            </script>";
+            
+
+        break;
+        case 'Del':
+            try{
+                $save->deleteRecord($tableName,$columnNames);
+            }
+            catch(Exception $e){
+
+            }
+                echo "<script>
+            alert('Record Deleted.');
+            window.location.href='table_show.php?tablename=$tableName';
+            </script>";
+            
 
         break;
     } 

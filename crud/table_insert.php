@@ -42,8 +42,11 @@ $required =  isRequired($tableName,$columnNames[0]);
         <?php
         $value = "";
         foreach($columnNames as $column){
+            
+            //skip id column
             if(isHidden($column))
             continue;
+            
             $form->createLabel($column,$aliases[$column]);
             
             $form->createInput($tableName,$column,$value);

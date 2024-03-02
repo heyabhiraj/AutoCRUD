@@ -28,7 +28,9 @@ $columnNames = getFilteredColumns($tableName);
 $columnRenames = renameColumns($columnNames);
 
 // Uncomment the line below to display column names (for debugging purposes)
-    showColumnNames($columnNames);
-    echo $columnNames[0];
-    print_r($form->getInputValues($tableName,$columnNames[0],""));
+    // showColumnNames($columnNames);
+    $id =  $columnNames[0] . " hello ";
+    echo $id;
+    // print_r($form->getInputValues($tableName,$columnNames[0],""));
+    
 ?>

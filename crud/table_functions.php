@@ -136,10 +136,15 @@ class Save{
         return null;
     }
 
-
+    /**
+     *  
+     * @param string $tableName - stores name of the table to be inserted
+     * @param array $columnNames - stores array of all the relevant columns in the table
+     * 
+     */
 
     function saveRecord($tableName,$columnNames){
-        global $conn;
+        global $conn; $fields=[];
         foreach($columnNames as $column){
             if(isHidden($column))
             continue;
@@ -155,12 +160,45 @@ class Save{
         VALUES('".implode("','",$record)."')";
 
         echo $sql;
-        $conn->query($sql) or die("Query failed");
+        $conn->query($sql) or die("Query failed in insert");
     }
 
+
+
+    function updateRecord($tableName,$columnNames){
+        global $conn; $set=[]; $id="";
+        foreach($columnNames as $column){
+            // if column is an id
+            if(isHidden($column)){
+                $id =" $column = $_REQUEST[id]" ;
+                continue;
+            }
+            $set[$column] = "$column = '$_REQUEST[$column]'";
+
+
+        }
+
+        $sql = "UPDATE $tableName set ".implode(",",$set)." WHERE $id";
+        echo $sql;
+        $conn->query($sql) or die("Query Failed in update");
+        
+    }
+    function deleteRecord($tableName,$columnNames){
+        global $conn; $id="";
+        foreach($columnNames as $column){
+            if(isHidden($column)){
+                $id ="$column = $_REQUEST[id]" ;
+                break;
+            }
+        }
+        // Delete Query
+        $sql= "DELETE FROM $tableName WHERE $id" ;
+        echo $sql;
+        
+        $conn->query($sql) or die("Query Failed in update");
+    }
+    
 }
-
-
 /************************************/
 
 
@@ -175,7 +213,7 @@ class Form{
 
 public function createInput($tableName, $columnName, $value){
     global $foreignKey;
-    // checks and set the input type of the particular column
+    // detects the input type of the particular column
     $check=$this->setInputType($tableName,$columnName);
     // check if it is a selection type
     if($check == "enum")
@@ -209,7 +247,7 @@ public function createInput($tableName, $columnName, $value){
             
             $spell = "spellcheck=true" ;
             echo "<input type=$inputType name=$columnName 
-                    id=$aliases[$columnName] value='$value' $spell $required >";
+                    id=$columnName value='$value' $spell $required >";
         }
         
                 /**
@@ -279,7 +317,7 @@ public function createInput($tableName, $columnName, $value){
             
             $spell = "spellcheck=true" ;
             global $required;
-            echo "<textarea name=$columnName id=$aliases[$columnName] '$spell' cols=22 rows=5 $required>$value</textarea>";
+            echo "<textarea name=$columnName id=$columnName '$spell' cols=22 rows=5 $required>$value</textarea>";
         }
         /**
          *  Create a selection for enum
@@ -296,7 +334,7 @@ public function createInput($tableName, $columnName, $value){
             }
             $required = isRequired($tableName,$columnName);
             global $aliases;
-            echo "<select name=$columnName id=$aliases[$columnName] $required>";      // Selection tag
+            echo "<select name=$columnName id=$columnName $required>";      // Selection tag
 
             echo "<option disabled selected>Select</option>";            // Disabled option
             $enum = $form->getEnumValues($tableName,$columnName);                  // Get enum values
@@ -370,7 +408,7 @@ public function createInput($tableName, $columnName, $value){
             global $conn,$categoryList,$foreignKey,$aliases;
             $value = $form->getCategoryValues();
             
-            echo "<select name=$columnName id=$aliases[$columnName] required>"; // Selection tag
+            echo "<select name=$columnName id=$columnName required>"; // Selection tag
             echo "<option disabled selected>Select</option>";    // Disabled option
             foreach($value as $id=>$name){  
                 $selected = isSelected($id,$selectedValue);

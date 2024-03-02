@@ -83,11 +83,23 @@ $columnRenames = renameColumns($columnNames);
                 } ?> 
                   
                 <td><a href="table_edit.php?<?php echo "tablename=".$tableName."&id=".$id;?>">Edit</a></td>
-                <td>Delete</td>
+                <td><button class=del onclick="DeleteConfirm(<?php echo "$n,$id"; ?>)" >Delete</button></td>
                 </li>
             </tr>
             <?php } ?>
         
     </table>
+
+    <script> function DeleteConfirm(n,id) {
+
+        n++;
+    let url = "table_save.php?<?php echo "tablename=$tableName&pagename=Del&id=";?>";
+      if(confirm("Are you sure to delete this item no. "+n+"?"))
+      window.location.href=url+id;
+        else
+      // Force a hard reload (clear cache) if supported by the browser
+    window.location.reload(true);
+     }
+</script>
 </body>
 </html>
