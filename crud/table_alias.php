@@ -1,14 +1,15 @@
 <?php
 
-$aliases = [];      // for storing aliases of the table fields
+$columnAliases = [];      // for storing aliases of the table fields
 $where = "";        //for storing where clause of the query
 
 /**
- *  Alias to be displayed instead of columnNames
+ *  Alias to be displayed instead of columnNames.
+ *  These will be used as table headings and input labels
  */
 switch($tableName){
     case 'item_category':
-        $aliases = [
+        $columnAliases = [
             'category_id' => 'Id',
             'category_name' => 'Name',
             'category_status' => 'Status',
@@ -20,7 +21,7 @@ switch($tableName){
         break;
         
     case 'item_list':
-        $aliases = [
+        $columnAliases = [
             'item_id' => 'Id',
             'category_id' => 'Category',
             'item_name' => 'Name',
@@ -33,32 +34,37 @@ switch($tableName){
         break;
 
     case 'item_schedule':
-        $aliases = [
+        $columnAliases = [
             'schedule_id' => 'Id',
             
         ];
-        $aliases[$columnName];
+        $columnAliases[$columnName];
         break;
-        
+
+    // Add more cases based on the added tables
     default:
     break;
 }
 
+
+// Aliases to be displayed instead of real entity names
+// Used in title tag and form headings
 $tableAliases= [
     'item_category' => 'Food Category',
     'item_list' => 'Food Item',
     'item_schedule' => 'Serve Schedule',
-
 ];
 
-$foreignKey=[];     // Store data of foreign keys like 'related_table' => 'primary_key'
-// not final
+$foreignKey=[];     // Store data of foreign keys present in the table 
+// like `related_table` => `their_primary_key_acting_as_foreign_key`
+//
 
 switch($tableName){
     case 'item_list':
+        // says that `item_list` is related to `item_category` throigh `category_id`
         $foreignKey = [
-            'item_category' => 'category_id'
-            
+            'item_category' => 'category_id'    
+            // Add more as more fk constraints are created
         ];
         break;
     case 'item_schedule':
@@ -66,6 +72,7 @@ switch($tableName){
             'item_list' => 'item_id'
         ];
         break;
+    // Add more cases according to new entities and relations created
     default:
     break;
 }
@@ -73,12 +80,12 @@ switch($tableName){
 
 
 $categoryColumnList = []; // Stores the relevant column name to be fetched using the foriegnkey
+// like `related_table` => `column_required_to_display`
 switch($tableName){
     case 'item_list':
         $categoryColumnList = [
-
             'item_category'=>'category_name'
-                // Add more
+            // Add more but only one column from each table
         ];
         break;
     default:
@@ -86,12 +93,44 @@ switch($tableName){
 }
 
 
+/** Field Names and keywords to create 'Text Area'
+ *  Check against aliases/columnRenames.
+ *  If column name match any in the below array a function is defined to create a textArea.
+ *  Add more keywords according to your need but make sure you mention them in the 
+ *  columnAliases array under the right table name case.
+ */
+$forTextArea = array(
+    'COMMENT',
+    'FEEDBACK',
+    'DESCRIPTION',
+    'BIO',
+    'ADDRESS',
+    'LOCATION',
+    'NOTES',
+    'REVIEWS'
+);
+
+
+/*********************```R I S K Y    Z O N E```******************/
+
+/**
+ *  Checks against the keywords that need to stay hidden in the form.
+ *  Currently, it is limited to Id and may not be altered or modified since many functions are 
+ *  dependent on this variable
+ */
+$toHide= array(
+    'Id'   
+);
+
+
+/*********************```E N O U G H    S C R O L L I N G```*********************/
+
 
 /** 2-D array of all input types and their corresponding data type in MySQL
- * Key is the input type and value is the corresponding data type in MySQL
+ * Key is the input type in HTML and value is the corresponding data type in MySQL
  * Example: $dataTypes['number step = 0.01 '] = array('DECIMAL', 'FLOAT', 'DOUBLE');
  * This means that if the user selects the data type 'number step = 0.01 ' in the form,
- * the corresponding data type in MySQL will be 'DECIMAL', 'FLOAT', or 'DOUBLE'.
+ * the corresponding data type in MySQL will be 'DECIMAL', 'FLOAT', or 'DOUBLE' and vice
  */
 $dataTypes = array(
     'number ' => array(
@@ -130,29 +169,6 @@ $dataTypes = array(
         'MULTIPOLYGON',
         'GEOMETRYCOLLECTION'
     )
-);
-
-/** Field Names to create Text Area
- *  Check against aliases/columnRenames.
- *  If alias match any in the below array a function is defined to create a textArea 
- */
-$forTextArea = array(
-    'COMMENT',
-    'FEEDBACK',
-    'DESCRIPTION',
-    'BIO',
-    'ADDRESS',
-    'LOCATION',
-    'NOTES',
-    'REVIEWS'
-);
-
-/**
- *  Check against aliases/columnRenames.
- */
-$toHide= array(
-    'Id'
-     
 );
 
 

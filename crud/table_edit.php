@@ -20,7 +20,7 @@ $required =  isRequired($tableName,$columnNames[0]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert</title>
+    <title>Update <?php echo $tableAliases[$tableName];?></title>
     <link rel="stylesheet" href="style.scss">
     <style></style>
 </head>
@@ -42,7 +42,7 @@ $required =  isRequired($tableName,$columnNames[0]);
 
             }
             
-            $form->createLabel($column,$aliases[$column]);
+            $form->createLabel($column,$columnAliases[$column]);
             
             $value = $form->getInputValues($tableName,$column,$where);
             

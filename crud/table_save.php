@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  
+    <title>Saving Changes...</title>
+</head>
+<body>
+    
+</body>
+</html>
+
 <?php
 
 /****** Saves Changes After Insert, Update, or Delete  ******/

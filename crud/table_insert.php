@@ -24,7 +24,7 @@ $required =  isRequired($tableName,$columnNames[0]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert</title>
+    <title>Insert <?php echo $tableAliases[$tableName];?></title>
     <link rel="stylesheet" href="style.scss">
     <style></style>
 </head>
@@ -47,7 +47,7 @@ $required =  isRequired($tableName,$columnNames[0]);
             if(isHidden($column))
             continue;
             
-            $form->createLabel($column,$aliases[$column]);
+            $form->createLabel($column,$columnAliases[$column]);
             
             $form->createInput($tableName,$column,$value);
             echo "<br>";

@@ -40,13 +40,13 @@
      * @return array - An array containing filtered column names.
      */
     function getFilteredColumns($tableName){
-        global $aliases;
+        global $columnAliases;
         $columnNames= getColumnNames($tableName);
         define("LEN", count($columnNames)); // to keep the length constant
 
         // Unset elements based on aliases
         for ($i = 0; $i < LEN; $i++){
-            if (!isset($aliases[$columnNames[$i]]))
+            if (!isset($columnAliases[$columnNames[$i]]))
                 unset($columnNames[$i]);
         }
 
@@ -62,12 +62,12 @@
      * @return array - An array containing renamed column names.
      */
     function renameColumns($columnNames){
-        global $aliases;
+        global $columnAliases;
 
         // Iterate through column names and rename based on aliases
         for ($i = 0; $i < count($columnNames); $i++){
-            if (isset($aliases[$columnNames[$i]]))
-                $columnNames[$i] = $aliases[$columnNames[$i]];
+            if (isset($columnAliases[$columnNames[$i]]))
+                $columnNames[$i] = $columnAliases[$columnNames[$i]];
         }
 
         // Return the array of renamed column names
@@ -238,7 +238,7 @@ public function createInput($tableName, $columnName, $value){
          *  @param string $selectedValue - The selected value.
          ***/
         protected  function createInputTag($tableName, $columnName, $value){
-            global $aliases; $form= new Form();
+            global $columnAliases; $form= new Form();
             $required = isRequired($tableName,$columnName);     // Check if column is required 
             $inputType = $form->setinputType($tableName, $columnName) ;
             $hidden = isHidden($columnName);           // Check if column is hidden
@@ -313,7 +313,7 @@ public function createInput($tableName, $columnName, $value){
                 echo "TextArea not applicable here.";
                 return;
             }
-            global $aliases;
+            global $columnAliases;
             
             $spell = "spellcheck=true" ;
             global $required;
@@ -333,7 +333,7 @@ public function createInput($tableName, $columnName, $value){
                 return;
             }
             $required = isRequired($tableName,$columnName);
-            global $aliases;
+            global $columnAliases;
             echo "<select name=$columnName id=$columnName $required>";      // Selection tag
 
             echo "<option disabled selected>Select</option>";            // Disabled option
@@ -405,7 +405,7 @@ public function createInput($tableName, $columnName, $value){
          **/
          function createCategorySelection($columnName,$selectedValue){
              $form= new Form();
-            global $conn,$categoryList,$foreignKey,$aliases;
+            global $conn,$categoryList,$foreignKey,$columnAliases;
             $value = $form->getCategoryValues();
             
             echo "<select name=$columnName id=$columnName required>"; // Selection tag
@@ -479,7 +479,7 @@ function isSelected($value,$selectedValue){
 }
 
 function isHidden($columnName){
-    global $toHide,$aliases,$foreignKey;
+    global $toHide,$columnAliases,$foreignKey;
     if(in_array($columnName,$foreignKey))
     return "";
     foreach($toHide as $hide){
