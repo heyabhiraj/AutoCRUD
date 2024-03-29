@@ -38,7 +38,7 @@ if(!isset($_REQUEST['tablename'])){
             
             echo "<script>
             alert('Record Inserted.');
-            window.location.href='table_insert.php?tablename=$tableName';
+            window.location.href='table_show.php?tablename=$tableName';
             </script>";
             
 
@@ -79,7 +79,7 @@ if(!isset($_REQUEST['tablename'])){
 
 
 
-// header("Location: table_insert.php");
+// header("Location: index.php");
 
 
 
@@ -104,22 +104,22 @@ if(!isset($_REQUEST['tablename'])){
 
 
 
-/* For reference */
-/**
-    *
-    $name = $_POST['Name'];
-    $email = $_POST['Email'];
-    $phone = $_POST['Phone'];
-    $address = $_POST['Address'];
-    $gender = $_POST['Gender'];
-    $dob = $_POST['DOB'];
-    $blood_group = $_POST['blood_group'];
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-    $image = $_FILES['image']['name'];
-    $image_tmp = $_FILES['image']['tmp_name'];
-        move_uploaded_file($image_tmp,"images/$image");
+// /* For reference */
+// /**
+//     *
+//     $name = $_POST['Name'];
+//     $email = $_POST['Email'];
+//     $phone = $_POST['Phone'];
+//     $address = $_POST['Address'];
+//     $gender = $_POST['Gender'];
+//     $dob = $_POST['DOB'];
+//     $blood_group = $_POST['blood_group'];
+//     $password = $_POST['password'];
+//     $confirm_password = $_POST['confirm_password'];
+//     $image = $_FILES['image']['name'];
+//     $image_tmp = $_FILES['image']['tmp_name'];
+//         move_uploaded_file($image_tmp,"images/$image");
         
     
-    */
+//     */
 ?>

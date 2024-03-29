@@ -21,16 +21,19 @@ $required =  isRequired($tableName,$columnNames[0]);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update <?php echo $tableAliases[$tableName];?></title>
-    <link rel="stylesheet" href="style.scss">
+    <!-- <link rel="stylesheet" href="style.scss"> -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style></style>
 </head>
 <body>
-    <form action="table_save.php" method="get">
+<div class="flex h-screen justify-center items-center ml-20">
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5 overflow-hidden">
+    <form action="table_save.php" method="post">
         <input type="hidden" name="pagename" value="Edit">
         <input type="hidden" name="tablename" value="<?php echo $tableName ?>">
         <input type="hidden" name="id" value="<?php echo $id ?>">
         
-        <h1 style="text-align: center;margin-top: 20px;margin-bottom: 20px;font-size: 30px;color: #1a1a1a;font-weight: bold; letter-spacing: 2px;border-bottom: 1px solid;">
+        <h1 class="text-4xl font-extrabold border-b text-yellow-700"> 
            <?php echo "Edit ". $tableAliases[$tableName] ?> </h1>
         <?php
         $value = ""; $where = "";
@@ -50,8 +53,10 @@ $required =  isRequired($tableName,$columnNames[0]);
             echo "<br>";
         }
         ?>   
-    <input type="submit" value="Update">
+    <input class="bg-black rounded p-3 text-white mt-5" type="submit" value="Update">
     </form>
+</div>
+</div>
 </body>
 <?php
 

@@ -24,18 +24,20 @@ $required =  isRequired($tableName,$columnNames[0]);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insert <?php echo $tableAliases[$tableName];?></title>
-    <link rel="stylesheet" href="style.scss">
+    <title>Add <?php echo $tableAliases[$tableName];?></title>
+    <!-- <link rel="stylesheet" href="style.scss"> -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style></style>
 </head>
 <body>
-    
-    <form action="table_save.php" method="get">
+<div class="flex h-screen justify-center items-center ml-20">
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5 overflow-hidden">
+    <form action="table_save.php" method="post">
 
         <input type="hidden" name="pagename" value="Add">
         <input type="hidden" name="tablename" value="<?php echo $tableName ?>">
         
-        <h1 style="text-align: center;margin-top: 20px;margin-bottom: 20px;font-size: 30px;color: #1a1a1a;font-weight: bold; letter-spacing: 2px;border-bottom: 1px solid;">
+        <h1 class="text-4xl font-bold border-b text-yellow-600">
            <?php echo "Add ". $tableAliases[$tableName] ?> </h1>
 
 
@@ -53,7 +55,7 @@ $required =  isRequired($tableName,$columnNames[0]);
             echo "<br>";
         }
         ?>
-    <input type="submit" value="Insert">
+    <input class="bg-black rounded p-3 text-white mt-5" type="submit" value="Insert">
     </form>
     
 

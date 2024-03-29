@@ -3,67 +3,75 @@
 $columnAliases = [];      // for storing aliases of the table fields
 $where = "";        //for storing where clause of the query
 
+
 /**
  *  Alias to be displayed instead of columnNames.
  *  These will be used as table headings and input labels
  */
-switch($tableName){
+switch ($tableName) {
     case 'item_category':
         $columnAliases = [
             'category_id' => 'Id',
             'category_name' => 'Name',
             'category_status' => 'Status',
-            'category_description' => 'Description',
             'category_image' => 'Image'
-            
-           ] ; 
-      
+
+        ];
+
         break;
-        
+
     case 'item_list':
         $columnAliases = [
             'item_id' => 'Id',
             'category_id' => 'Category',
             'item_name' => 'Name',
             'item_price' => 'Price',
-            'item_description' => 'Description',
             'item_status' => 'Status',
             'prep_time' => 'Preparation Time',
             'item_image' => 'Image',
-           ] ;  
+        ];
         break;
 
     case 'item_schedule':
         $columnAliases = [
             'schedule_id' => 'Id',
-            
+
         ];
-        $columnAliases[$columnName];
+    case 'registered_user':
+        $columnAliases = [
+            'user_id' => 'Id',
+            'fname' => 'First',
+            'lname' => 'Last',
+            'email' => 'Email',         
+            'phone' => 'Phone',
+
+        ];
         break;
 
-    // Add more cases based on the added tables
+        // Add more cases based on the added tables
     default:
-    break;
+        break;
 }
 
 
 // Aliases to be displayed instead of real entity names
 // Used in title tag and form headings
-$tableAliases= [
+$tableAliases = [
     'item_category' => 'Food Category',
     'item_list' => 'Food Item',
     'item_schedule' => 'Serve Schedule',
+    'registered_user' => 'Users'
 ];
 
-$foreignKey=[];     // Store data of foreign keys present in the table 
+$foreignKey = [];     // Store data of foreign keys present in the table 
 // like `related_table` => `their_primary_key_acting_as_foreign_key`
 //
 
-switch($tableName){
+switch ($tableName) {
     case 'item_list':
         // says that `item_list` is related to `item_category` throigh `category_id`
         $foreignKey = [
-            'item_category' => 'category_id'    
+            'item_category' => 'category_id'
             // Add more as more fk constraints are created
         ];
         break;
@@ -72,24 +80,24 @@ switch($tableName){
             'item_list' => 'item_id'
         ];
         break;
-    // Add more cases according to new entities and relations created
+        // Add more cases according to new entities and relations created
     default:
-    break;
+        break;
 }
 
 
 
 $categoryColumnList = []; // Stores the relevant column name to be fetched using the foriegnkey
 // like `related_table` => `column_required_to_display`
-switch($tableName){
+switch ($tableName) {
     case 'item_list':
         $categoryColumnList = [
-            'item_category'=>'category_name'
+            'item_category' => 'category_name'
             // Add more but only one column from each table
         ];
         break;
     default:
-    break;
+        break;
 }
 
 
@@ -118,8 +126,8 @@ $forTextArea = array(
  *  Currently, it is limited to Id and may not be altered or modified since many functions are 
  *  dependent on this variable
  */
-$toHide= array(
-    'Id'   
+$toHide = array(
+    'Id'
 );
 
 
@@ -198,5 +206,3 @@ $group = "";        //for storing group by clause of the query
 $having = "";       //for storing having clause of the query
 $select = "";       //for storing select clause of the query
 /**/
-
-?>

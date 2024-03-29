@@ -1,15 +1,18 @@
 <?php
+
+
+define('DB_SERVER', 'localhost');
+define('DB_USERNAME', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'can1');
+
 $conn;
 /************ DATABASE FUNCTIONS **************/
 function connectToDB(){
     global $conn;
-    $servername = "localhost";
-    $username = "root";
-    $password = "TPPkWL]fCQRdmY]r";
-    $dbname = "canteen_ordering_system";
 
     // Create connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
     // Check connection
     if ($conn->connect_error) {
@@ -29,13 +32,22 @@ function getTables(){
 
     $tables = [];
     while ($row = $result->fetch_assoc()){
-        $tables[] = $row['Tables_in_canteen_ordering_system'];
+        $tables[] = $row['Tables_in_'.DB_NAME];
     }
     return $tables;
 }
 
 
 connectToDB();
+
+// Function to sanitize user input (prevent SQL injection)
+function sanitize_input($data) {
+    global $conn;
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $conn->real_escape_string($data);
+}
 
 $tables = getTables();
 
