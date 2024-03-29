@@ -9,7 +9,7 @@ To be able to make this system your own, read carefully the comments of `table_a
 <h2>Installation</h2>
 To seamlessly integrate the AutoCRUD system into your project, follow these simple installation steps:
 <h3> Download Source Code:</h3>
-  <li>Visit the GitHub repository at <a href="https://github.com/omsrivastava512/AutoCRUD/">AutoCRUD</a> and download the source code.
+  <li>Visit the GitHub repository at <a href="https://github.com/heyabhiraj/AutoCRUD">AutoCRUD</a> and download the source code.
 <h3>Integration:</h3>
   <li>Integrate the downloaded source code into your project's admin panel.
 
@@ -59,9 +59,6 @@ Configure AutoCRUD to align with your project requirements by following these se
   Store the column of the related table that is to fetched using the foreign key. For example, `category_name` is fetched using the foreign key `category_id` from the table `item_category`.
  
    
-
-   
- 
 
 </ol>
 
