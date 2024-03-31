@@ -18,17 +18,19 @@ $columnNames = getFilteredColumns($tableName);
 // Sanitize search term to prevent SQL injection
 $search = trim($_POST['search']);
 $searchResults = search($conn, $search ,$tableName, $columnNames);
+
 if ($searchResults !== false) {
   // Display search results
   foreach ($searchResults as $row) {
+    $id=$row[$columnNames[0]];
     echo "<tr class='bg-white border-b dark:bg-gray-900 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600'>";
     foreach ($columnNames as $col) {
       echo "<td class='text-center'>"  . $row[$col] . "</td>";
       }
 
    echo"<td class='flex items-center px-6 py-4'>
-    <a class='font-medium text-blue-600 dark:text-blue-500 hover:underline' href='table_edit.php?'>Edit</a>
-    <button class='font-medium text-red-600 dark:text-red-500 hover:underline ms-3' onclick='DeleteConfirm()'>Delete</button>
+    <a class='font-medium text-blue-600 dark:text-blue-500 hover:underline' href='table_edit.php?tablename=$tableName&id=$id'>Edit</a>
+    <button class='font-medium text-red-600 dark:text-red-500 hover:underline ms-3' onclick='DeleteConfirm($id,$id)'>Delete</button>
 </td></tr>";
 
   }
